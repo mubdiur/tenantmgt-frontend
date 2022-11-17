@@ -1,13 +1,13 @@
 import React from "react";
-import { useRef, useState, useEffect, useContext } from "react";
-import AuthContext from "./context/AuthProvider";
-import jwt from "jwt-decode";
+import { useRef, useState, useEffect } from "react";
+import useAuth from "../hooks/useAuth";
+import jwtDecode from 'jwt-decode';
 
-import axios from "./api/axios";
+import axios from "../api/axios";
 const LOGIN_URL = "/login";
 
 const Login = () => {
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth;
     const userRef = useRef();
     const errRef = useRef();
 
@@ -26,21 +26,19 @@ const Login = () => {
                 username,
                 password
             });
-            console.log("Request Data:", requestData);
             const response = await axios.post(LOGIN_URL,
                 requestData,
                 {
                     headers: { 'Content-Type': 'application/json' }
                 }
             );
-            console.log(JSON.stringify(response?.data));
 
             const accessToken = response?.data?.accessToken;
             const refreshToken = response?.data?.refreshToken;
-            const decoded = jwt.decode(accessToken);
+            const decoded = jwtDecode(accessToken);
+            
             const roles = decoded.roles;
-
-            console.log("Roles: ", roles);
+            
             setAuth(username, roles, accessToken, refreshToken);
 
             setSuccess(true);
@@ -52,7 +50,10 @@ const Login = () => {
             if (!err?.response) {
                 setErrMsg('No Server Response');
             } else {
-                setErrMsg('Login Failed')
+                if (err?.response?.errorMsg) {
+                    setErrMsg(err.response.errorMsg);
+                }
+                else setErrMsg('Login Failed')
             }
             errRef.current.focus();
         }
@@ -61,14 +62,14 @@ const Login = () => {
     return (
         <>
             {success ? (
-                <section className="register-section">
-                    <h1>Success!</h1>
+                <section className="mid-section">
+                    <h1>You are logged in!</h1>
                     <p>
                         <a href="/home">Go to Home</a>
                     </p>
                 </section>
             ) : (
-                <section className="register-section">
+                <section className="mid-section">
                     <p
                         ref={errRef}
                         className={errMsg ? "alert alert-danger" : "d-none"}

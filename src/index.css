@@ -21,7 +21,7 @@ code {
         monospace;
 }
 
-.register-section {
+.mid-section {
     justify-self: center;
     align-self: start;
     display: grid;

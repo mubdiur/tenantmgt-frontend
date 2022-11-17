@@ -1,6 +1,6 @@
 import React from "react";
 import { useRef, useState, useEffect } from "react";
-import axios from "./api/axios";
+import axios from "../api/axios";
 
 const REGISTER_URL = "/register";
 
@@ -63,14 +63,14 @@ const Register = () => {
     return (
         <>
             {success ? (
-                <section className="register-section">
+                <section className="mid-section">
                     <h1>Success!</h1>
                     <p>
                         <a href="/login"> Log in</a>
                     </p>
                 </section>
             ) : (
-                <section className="register-section">
+                <section className="mid-section">
                     <p
                         ref={errRef}
                         className={errMsg ? "alert alert-danger" : "d-none"}
