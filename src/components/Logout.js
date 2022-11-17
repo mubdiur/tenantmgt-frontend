@@ -6,10 +6,10 @@ const Logout = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        localStorage.setItem("username", null);
-        localStorage.setItem("roles", null);
-        localStorage.setItem("accessToken", null);
-        localStorage.setItem("refreshToken", null);
+        localStorage.removeItem("username");
+        localStorage.removeItem("roles");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         setAuth({});
 
         navigate("/login");
