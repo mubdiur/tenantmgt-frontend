@@ -1,10 +1,14 @@
 import React from "react";
-import { useRef, useState, useEffect } from "react";
-import axios from "../api/axios";
+import { useRef, useState } from "react";
+import axiosApi from "../api/axios";
+import useAuth from "../hooks/useAuth";
+import { Navigate } from "react-router-dom";
 
 const REGISTER_URL = "/register";
 
 const Register = () => {
+    const { auth } = useAuth();
+
     const userRef = useRef();
     const errRef = useRef();
 
@@ -22,7 +26,6 @@ const Register = () => {
 
     const [errMsg, setErrMsg] = useState("");
 
-    useEffect(() => {}, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,7 +41,7 @@ const Register = () => {
                 roles: []
             });
             console.log("Request Data:", requestData);
-            const response = await axios.post(REGISTER_URL,
+            const response = await axiosApi.post(REGISTER_URL,
                 requestData,
                 {
                     headers: { 'Content-Type': 'application/json' }
@@ -62,7 +65,8 @@ const Register = () => {
 
     return (
         <>
-            {success ? (
+            {auth?.username
+                ? <Navigate to="/home" /> : (success ? (
                 <section className="mid-section">
                     <h1>Success!</h1>
                     <p>
@@ -194,7 +198,7 @@ const Register = () => {
                         </a>
                     </p>
                 </section>
-            )}
+            ))}
         </>
     );
 };

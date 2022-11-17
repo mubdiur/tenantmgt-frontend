@@ -44,3 +44,7 @@ form {
 form > * {
     margin: 0.5rem;
 }
+
+nav .active {
+    color: rgb(150, 181, 247);
+}

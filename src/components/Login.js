@@ -1,13 +1,14 @@
-import React from "react";
-import { useRef, useState, useEffect } from "react";
-import useAuth from "../hooks/useAuth";
-import jwtDecode from 'jwt-decode';
+import React, { useContext } from "react";
+import { useRef, useState } from "react";
+import AuthContext from "../context/AuthProvider";
+import jwtDecode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
-import axios from "../api/axios";
+import axiosApi from "../api/axios";
 const LOGIN_URL = "/login";
 
 const Login = () => {
-    const { setAuth } = useAuth;
+    const { setAuth, auth } = useContext(AuthContext);
     const userRef = useRef();
     const errRef = useRef();
 
@@ -17,43 +18,44 @@ const Login = () => {
 
     const [errMsg, setErrMsg] = useState("");
 
-    useEffect(() => {}, []);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const requestData = JSON.stringify({
                 username,
-                password
+                password,
             });
-            const response = await axios.post(LOGIN_URL,
-                requestData,
-                {
-                    headers: { 'Content-Type': 'application/json' }
-                }
-            );
+            const response = await axiosApi.post(LOGIN_URL, requestData, {
+                headers: { "Content-Type": "application/json" },
+            });
 
             const accessToken = response?.data?.accessToken;
             const refreshToken = response?.data?.refreshToken;
             const decoded = jwtDecode(accessToken);
-            
+            console.log("Decoded: ", JSON.stringify(decoded));
             const roles = decoded.roles;
-            
-            setAuth(username, roles, accessToken, refreshToken);
 
-            setSuccess(true);
+            setAuth({ username, roles, accessToken, refreshToken });
+            localStorage.setItem("username", username);
+            localStorage.setItem("roles", JSON.stringify(roles));
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+
+            navigate("/");
+            // setSuccess(true);
             //clear state and controlled inputs
             //need value attrib on inputs for this
-            setUser('');
-            setPwd('');
+            setUser("");
+            setPwd("");
         } catch (err) {
             if (!err?.response) {
-                setErrMsg('No Server Response');
+                setErrMsg("No Server Response");
             } else {
                 if (err?.response?.errorMsg) {
                     setErrMsg(err.response.errorMsg);
-                }
-                else setErrMsg('Login Failed')
+                } else setErrMsg("Login Failed");
             }
             errRef.current.focus();
         }
