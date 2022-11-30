@@ -13,6 +13,6 @@ const axiosApi = axios.create({
         "Content-Type": "application/json",
     },
 });
-// instance.interceptors.request.use();
+// axiosApi.interceptors.request.use();
 
 export default axiosApi;
